@@ -74,7 +74,7 @@ Gift Life – Organ Transplant Awareness
 
 <div class="card">
 
-<select id="role">
+<select id="role" onchange="toggleOrgan()">
 <option value="recipient">Organ Transplant Recipient</option>
 <option value="donor">Living Organ Donor</option>
 <option value="pledge">I Pledge for Organ Donation</option>
@@ -102,6 +102,19 @@ Gift Life – Organ Transplant Awareness
 
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
+
+function toggleOrgan(){
+
+let role = document.getElementById("role").value;
+let organ = document.getElementById("organ");
+
+if(role=="pledge"){
+organ.disabled = true;
+}else{
+organ.disabled = false;
+}
+
+}
 
 function generatePoster(){
 
@@ -137,11 +150,11 @@ icon.src="donor-icon.png";
 }
 
 if(role=="pledge"){
-icon.src="donor-icon.png"; 
+icon.src="donor-icon.png";
 }
 
 icon.onload=function(){
-ctx.drawImage(icon,20,20,120,120);   // icon size increased
+ctx.drawImage(icon,20,20,120,120);
 }
 
 let logo=new Image();
@@ -176,7 +189,7 @@ ctx.fillText("I Pledge for Organ Donation",250,390);
 }
 
 ctx.font="16px Arial";
-ctx.fillText("Support Organ Donation Awareness",250,450);
+ctx.fillText("Donate Organ Save Lives",250,450);
 
 }
 
