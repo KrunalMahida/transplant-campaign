@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Organ Transplant Awareness Campaign</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+font-family:Arial;
+background:#ff7a00;
+margin:0;
+text-align:center;
+color:white;
+}
+
+.header{
+padding:20px;
+font-size:24px;
+font-weight:bold;
+}
+
+.container{
+padding:20px;
+}
+
+.card{
+background:white;
+color:black;
+padding:20px;
+border-radius:12px;
+max-width:420px;
+margin:auto;
+box-shadow:0 5px 20px rgba(0,0,0,0.2);
+}
+
+input,select,button{
+width:90%;
+padding:12px;
+margin:8px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:16px;
+}
+
+button{
+background:#ff7a00;
+color:white;
+border:none;
+font-weight:bold;
+cursor:pointer;
+}
+
+canvas{
+margin-top:50px;
+max-width:100%;
+border-radius:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+Gift Life – Organ Transplant Awareness
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<select id="role">
+<option value="recipient">Organ Transplant Recipient</option>
+<option value="donor">Living Organ Donor</option>
+</select>
+
+<select id="organ">
+<option value="Kidney">Kidney</option>
+<option value="Liver">Liver</option>
+<option value="Kidney & Liver">Kidney & Liver</option>
+</select>
+
+<input type="file" id="photo">
+
+<button onclick="generatePoster()">Generate Campaign Poster</button>
+
+<canvas id="canvas" width="500" height="500"></canvas>
+
+<button onclick="downloadPoster()">Download Image</button>
+
+<button onclick="shareWhatsApp()">Share on WhatsApp</button>
+
+</div>
+
+</div>
+
+<script>
+
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
+
+function generatePoster(){
+
+let role=document.getElementById("role").value;
+let organ=document.getElementById("organ").value;
+let file=document.getElementById("photo").files[0];
+
+if(!file){
+alert("Please upload photo");
+return;
+}
+
+let reader=new FileReader();
+
+reader.onload=function(e){
+
+let img=new Image();
+img.src=e.target.result;
+
+img.onload=function(){
+
+ctx.clearRect(0,0,500,500);
+
+ctx.drawImage(img,0,0,500,500);
+
+let icon=new Image();
+
+if(role=="recipient"){
+icon.src="recipient-icon.png";
+}
+
+if(role=="donor"){
+icon.src="donor-icon.png";
+}
+
+icon.onload=function(){
+ctx.drawImage(icon,30,30,90,90);
+}
+
+let logo=new Image();
+logo.src="kd-logo.png";
+
+logo.onload=function(){
+ctx.drawImage(logo,380,20,100,60);
+}
+
+ctx.fillStyle="rgba(255,122,0,0.9)";
+ctx.fillRect(0,340,500,160);
+
+ctx.fillStyle="Brown";
+ctx.textAlign="center";
+
+ctx.font="bold 26px Arial";
+
+if(role=="recipient"){
+ctx.fillText("I'm a Transplant Survivor",250,380);
+ctx.font="20px Arial";
+ctx.fillText("Grateful for the Gift of Life",250,410);
+}
+
+if(role=="donor"){
+ctx.fillText("I Donated My "+organ,250,380);
+ctx.font="20px Arial";
+ctx.fillText("To Save My Loved One",250,410);
+}
+
+ctx.font="16px Arial";
+ctx.fillText("Donate Organ Save Lives",250,450);
+
+}
+
+}
+
+reader.readAsDataURL(file);
+
+}
+
+function downloadPoster(){
+
+let link=document.createElement("a");
+link.download="transplant-campaign.png";
+link.href=canvas.toDataURL();
+link.click();
+
+}
+
+function shareWhatsApp(){
+
+let text="I support Organ Transplant Awareness. Create your poster here: ";
+
+let url=window.location.href;
+
+window.open("https://wa.me/?text="+encodeURIComponent(text+url));
+
+}
+
+</script>
+
+</body>
+</html>
