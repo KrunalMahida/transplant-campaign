@@ -4,7 +4,6 @@
 <head>
 
 <title>Organ Transplant Awareness Campaign</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
@@ -60,6 +59,11 @@ max-width:100%;
 border-radius:10px;
 }
 
+.checkbox{
+text-align:left;
+margin-left:20px;
+}
+
 </style>
 
 </head>
@@ -74,16 +78,25 @@ Gift Life – Organ Transplant Awareness
 
 <div class="card">
 
-<select id="role" onchange="toggleOrgan()">
+<select id="role" onchange="handleRoleChange()">
 <option value="recipient">Organ Transplant Recipient</option>
 <option value="donor">Living Organ Donor</option>
 <option value="pledge">I Pledge for Organ Donation</option>
 </select>
 
+<div class="checkbox">
+<label><input type="checkbox" id="cadaver"> Cadaver Donor</label><br>
+<label><input type="checkbox" id="living"> Living Donor</label>
+</div>
+
 <select id="organ">
 <option value="Kidney">Kidney</option>
 <option value="Liver">Liver</option>
-<option value="Kidney & Liver">Kidney & Liver</option>
+<option value="Heart">Heart</option>
+<option value="Lungs">Lungs</option>
+<option value="Pancreas">Pancreas</option>
+<option value="Cornea">Cornea</option>
+<option value="Hand">Hand</option>
 </select>
 
 <input type="file" id="photo">
@@ -103,15 +116,34 @@ Gift Life – Organ Transplant Awareness
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
-function toggleOrgan(){
+function handleRoleChange(){
 
 let role = document.getElementById("role").value;
 let organ = document.getElementById("organ");
 
+let cadaver = document.getElementById("cadaver");
+let living = document.getElementById("living");
+
 if(role=="pledge"){
 organ.disabled = true;
+cadaver.disabled = true;
+living.disabled = true;
+
+cadaver.checked = false;
+living.checked = false;
+
+}else if(role=="donor"){
+organ.disabled = false;
+cadaver.disabled = true;
+living.disabled = true;
+
+cadaver.checked = false;
+living.checked = false;
+
 }else{
 organ.disabled = false;
+cadaver.disabled = false;
+living.disabled = false;
 }
 
 }
@@ -122,9 +154,25 @@ let role=document.getElementById("role").value;
 let organ=document.getElementById("organ").value;
 let file=document.getElementById("photo").files[0];
 
+let cadaver=document.getElementById("cadaver").checked;
+let living=document.getElementById("living").checked;
+
 if(!file){
 alert("Please upload photo");
 return;
+}
+
+let typeText="";
+if(role=="recipient"){
+if(cadaver && living){
+typeText="Cadaver & Living";
+}
+else if(cadaver){
+typeText="Cadaver";
+}
+else if(living){
+typeText="Living";
+}
 }
 
 let reader=new FileReader();
@@ -137,59 +185,59 @@ img.src=e.target.result;
 img.onload=function(){
 
 ctx.clearRect(0,0,500,500);
-ctx.drawImage(img,0,0,500,500);
 
-let icon=new Image();
+// BACKGROUND
+ctx.fillStyle="#ff7a00";
+ctx.fillRect(0,0,500,500);
 
-if(role=="recipient"){
-icon.src="recipient-icon.png";
-}
+// BIG CIRCLE PHOTO (NO OVERLAP)
+ctx.save();
+ctx.beginPath();
+ctx.arc(250,150,150,0,Math.PI*2,true);
+ctx.closePath();
+ctx.clip();
+ctx.drawImage(img,100,0,300,300);
+ctx.restore();
 
-if(role=="donor"){
-icon.src="donor-icon.png";
-}
+// WHITE BORDER
+ctx.beginPath();
+ctx.arc(250,150,155,0,Math.PI*2);
+ctx.strokeStyle="white";
+ctx.lineWidth=6;
+ctx.stroke();
 
-if(role=="pledge"){
-icon.src="donor-icon.png";
-}
+// ORANGE TEXT AREA (SHIFTED DOWN - FIXED)
+ctx.fillStyle="rgba(255,122,0,0.95)";
+ctx.fillRect(0,320,500,180);
 
-icon.onload=function(){
-ctx.drawImage(icon,20,20,120,120);
-}
-
-let logo=new Image();
-logo.src="kd-logo.png";
-
-logo.onload=function(){
-ctx.drawImage(logo,360,20,120,70);
-}
-
-ctx.fillStyle="rgba(255,122,0,0.9)";
-ctx.fillRect(0,340,500,160);
-
+// TEXT
 ctx.fillStyle="white";
 ctx.textAlign="center";
 
-ctx.font="bold 26px Arial";
+ctx.font="bold 22px Arial";
 
 if(role=="recipient"){
-ctx.fillText("I'm a Transplant Survivor",250,380);
-ctx.font="20px Arial";
-ctx.fillText("Grateful for the Gift of Life",250,410);
+ctx.fillText("I'm a Transplant Survivor",250,370);
+ctx.font="16px Arial";
+ctx.fillText("Organ: "+organ,250,400);
+
+if(typeText!=""){
+ctx.fillText("Donor Type: "+typeText,250,430);
+}
 }
 
 if(role=="donor"){
-ctx.fillText("I Donated My "+organ,250,380);
-ctx.font="20px Arial";
-ctx.fillText("To Save My Loved One",250,410);
+ctx.fillText("I Donated My "+organ,250,370);
+ctx.font="16px Arial";
+ctx.fillText("To Save a Life",250,400);
 }
 
 if(role=="pledge"){
-ctx.fillText("I Pledge for Organ Donation",250,390);
+ctx.fillText("I Pledge for Organ Donation",250,380);
 }
 
-ctx.font="16px Arial";
-ctx.fillText("Donate Organ Save Lives",250,450);
+ctx.font="bold 28px Arial";
+ctx.fillText("Donate Organ Save Lives",250,480);
 
 }
 
@@ -200,12 +248,10 @@ reader.readAsDataURL(file);
 }
 
 function downloadPoster(){
-
 let link=document.createElement("a");
-link.download="transplant-campaign.png";
+link.download="campaign.png";
 link.href=canvas.toDataURL();
 link.click();
-
 }
 
 </script>
