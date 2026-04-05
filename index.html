@@ -78,6 +78,9 @@ Gift Life – Organ Transplant Awareness
 
 <div class="card">
 
+<!-- ✅ NAME FIELD ADDED -->
+<input type="text" id="name" placeholder="Enter Your Name">
+
 <select id="role" onchange="handleRoleChange()">
 <option value="recipient">Organ Transplant Recipient</option>
 <option value="donor">Living Organ Donor</option>
@@ -112,6 +115,20 @@ Gift Life – Organ Transplant Awareness
 </div>
 
 <script>
+
+// 🔥 PUT YOUR GOOGLE SCRIPT URL HERE
+let WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxOgHZylW0ACS3BOSFhbFSZE1nLMV5NcetTVqJRUBwxZytjHx3Bh8pusD4r-SAbO1g/exec";
+
+// SAVE DATA WITH NAME
+function saveData(name, role){
+fetch(WEB_APP_URL,{
+method:"POST",
+body: JSON.stringify({
+name: name,
+role: role
+})
+});
+}
 
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
@@ -150,6 +167,7 @@ living.disabled = false;
 
 function generatePoster(){
 
+let name=document.getElementById("name").value;
 let role=document.getElementById("role").value;
 let organ=document.getElementById("organ").value;
 let file=document.getElementById("photo").files[0];
@@ -159,6 +177,11 @@ let living=document.getElementById("living").checked;
 
 if(!file){
 alert("Please upload photo");
+return;
+}
+
+if(name==""){
+alert("Please enter your name");
 return;
 }
 
@@ -190,23 +213,22 @@ ctx.clearRect(0,0,500,500);
 ctx.fillStyle="#ff7a00";
 ctx.fillRect(0,0,500,500);
 
-// BIG CIRCLE PHOTO (NO OVERLAP)
+// PHOTO
 ctx.save();
 ctx.beginPath();
 ctx.arc(250,150,150,0,Math.PI*2,true);
-ctx.closePath();
 ctx.clip();
 ctx.drawImage(img,100,0,300,300);
 ctx.restore();
 
-// WHITE BORDER
+// BORDER
 ctx.beginPath();
 ctx.arc(250,150,155,0,Math.PI*2);
 ctx.strokeStyle="white";
 ctx.lineWidth=6;
 ctx.stroke();
 
-// ORANGE TEXT AREA (SHIFTED DOWN - FIXED)
+// TEXT AREA
 ctx.fillStyle="rgba(255,122,0,0.95)";
 ctx.fillRect(0,320,500,180);
 
@@ -217,27 +239,35 @@ ctx.textAlign="center";
 ctx.font="bold 22px Arial";
 
 if(role=="recipient"){
-ctx.fillText("I'm a Transplant Survivor",250,370);
+ctx.fillText("I'm a Transplant Survivor",250,360);
 ctx.font="16px Arial";
-ctx.fillText("Organ: "+organ,250,400);
+ctx.fillText("Organ: "+organ,250,390);
 
 if(typeText!=""){
-ctx.fillText("Donor Type: "+typeText,250,430);
+ctx.fillText("Donor Type: "+typeText,250,420);
 }
 }
 
 if(role=="donor"){
-ctx.fillText("I Donated My "+organ,250,370);
+ctx.fillText("I Donated My "+organ,250,360);
 ctx.font="16px Arial";
-ctx.fillText("To Save a Life",250,400);
+ctx.fillText("To Save a Life",250,390);
 }
 
 if(role=="pledge"){
-ctx.fillText("I Pledge for Organ Donation",250,380);
+ctx.fillText("I Pledge for Organ Donation",250,370);
 }
 
-ctx.font="bold 28px Arial";
+// ✅ NAME ON POSTER
+ctx.font="bold 18px Arial";
+ctx.fillText("- "+name,250,430);
+
+// FINAL LINE
+ctx.font="bold 26px Arial";
 ctx.fillText("Donate Organ Save Lives",250,480);
+
+// SAVE TO GOOGLE SHEET
+saveData(name, role);
 
 }
 
